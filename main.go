@@ -4,14 +4,19 @@ import (
 	"bufio"
 	"fmt"
 	"github.com/spf13/cobra"
+	"golang.org/x/exp/slog"
 	"os"
 	"strings"
 	"unicode/utf8"
 )
 
+var logger *slog.Logger
 var countBytes, countLines, countWords, countCharacters bool
 
 func main() {
+
+	handler := slog.NewTextHandler(os.Stdout, nil)
+	logger = slog.New(handler)
 
 	var rootCmd = &cobra.Command{
 		Use:   "myapp",
@@ -83,7 +88,7 @@ func main() {
 	rootCmd.Flags().BoolVarP(&countCharacters, "count-characters", "m", false, "Output the character count of a text file")
 
 	if err := rootCmd.Execute(); err != nil {
-		fmt.Println(err)
+		logger.Error(err.Error())
 		os.Exit(1)
 	}
 }
